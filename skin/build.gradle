@@ -1,0 +1,57 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 29
+    buildToolsVersion "29.0.3"
+
+    defaultConfig {
+        applicationId "com.gxd.skinloader.skin"
+        minSdkVersion 16
+        targetSdkVersion 29
+        versionCode 1
+        versionName "1.0"
+    }
+}
+
+afterEvaluate {
+    assembleRelease.doLast {
+        renameSkinFile(false)
+    }
+
+    assembleDebug.doLast {
+        renameSkinFile(true)
+    }
+}
+
+void renameSkinFile(boolean isDebug) {
+    def txt = isDebug ? "debug" : "release"
+    printSkinLog(txt, "begin")
+
+    // 皮肤文件名
+    final def skinFileName = "black.skin"
+    // 皮肤目录
+    final def skinDir = '../skin-file/'
+    final def dir = new File(skinDir)
+    if (!dir.exists()) {
+        dir.mkdirs()
+    }
+
+    final def f = new File(skinDir + skinFileName)
+    if (f.exists()) {
+        f.delete()
+    }
+
+    copy {
+        from(String.format('build/outputs/apk/%s/', txt))
+        into(skinDir)
+        include '*.apk'
+        exclude '**/*-unaligned.apk'
+        rename(String.format('skin-%s.apk', txt), skinFileName)
+    }
+    printSkinLog(txt, "end")
+}
+
+void printSkinLog(String txt1, String txt2) {
+    def uppercaseTxt1 = txt1.substring(0, 1).toUpperCase() + txt1.substring(1)
+    println(String.format('.....................assemble%s.doLast.%s......................', uppercaseTxt1, txt2))
+}
