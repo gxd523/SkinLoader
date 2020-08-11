@@ -1,5 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.novoda.bintray-release'
 
 android {
     compileSdkVersion 29
@@ -14,14 +13,5 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
-    }
-    publish {
-        userOrg = 'wdmzjgxd'// organizationId
-        repoName = 'gxd523'// repositoryName
-        groupId = 'com.gxd'
-        artifactId = 'skinloader'
-        publishVersion = '0.0.3'
-        desc = 'skin loader lib test.'
-        website = "https://github.com/gxd523/SkinLoader"
     }
 }
