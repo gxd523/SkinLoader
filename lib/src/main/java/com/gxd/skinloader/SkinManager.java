@@ -8,6 +8,7 @@ import android.content.res.AssetManager;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -39,12 +40,8 @@ public enum SkinManager {
         sharedPreferences = context.getSharedPreferences("sp_skin", Context.MODE_PRIVATE);
         String skinPath = sharedPreferences.getString(SKIN_PATH, "");
         if (!TextUtils.isEmpty(skinPath)) {
-            load(new File(skinPath));
+            load(new File(skinPath), null);
         }
-    }
-
-    public void load(File skinFile) {
-        load(skinFile, null);
     }
 
     public void load(File skinFile, SkinListener skinListener) {
@@ -127,9 +124,28 @@ public enum SkinManager {
         }
     }
 
+    public Drawable getDrawable(int resId) {
+        Drawable drawable = mContextRef.get().getResources().getDrawable(resId);
+        if (isDefaultSkin()) {
+            return drawable;
+        }
+        String resName = mContextRef.get().getResources().getResourceEntryName(resId);
+        int drawableResId = mResources.getIdentifier(resName, "drawable", skinPackageName);
+        try {
+            if (Build.VERSION.SDK_INT < 22) {
+                drawable = mResources.getDrawable(drawableResId);
+            } else {
+                drawable = mResources.getDrawable(drawableResId, null);
+            }
+        } catch (Resources.NotFoundException e) {
+            e.printStackTrace();
+        }
+        return drawable;
+    }
+
     public int getColor(int resId) {
         int colorValue = mContextRef.get().getResources().getColor(resId);
-        if (mResources == null || TextUtils.isEmpty(skinPackageName)) {
+        if (isDefaultSkin()) {
             return colorValue;
         }
 
@@ -144,41 +160,23 @@ public enum SkinManager {
         return colorValue;
     }
 
-    public Drawable getDrawable(int resId) {
-        Drawable drawable = mContextRef.get().getResources().getDrawable(resId);
-        if (mResources == null || TextUtils.isEmpty(skinPackageName)) {
-            return drawable;
-        }
-        String resName = mContextRef.get().getResources().getResourceEntryName(resId);
-        int drawableResId = mResources.getIdentifier(resName, "drawable", skinPackageName);
-        try {
-            if (android.os.Build.VERSION.SDK_INT < 22) {
-                drawable = mResources.getDrawable(drawableResId);
-            } else {
-                drawable = mResources.getDrawable(drawableResId, null);
-            }
-        } catch (Resources.NotFoundException e) {
-            e.printStackTrace();
-        }
-        return drawable;
-    }
-
     /**
      * 加载指定资源颜色drawable,转化为ColorStateList，保证selector类型的Color也能被转换。
      * 无皮肤包资源返回默认主题颜色
      */
     public ColorStateList convertToColorStateList(int attrValueRefId) {
-        ColorStateList colorList = null;
         String resName = mContextRef.get().getResources().getResourceEntryName(attrValueRefId);
+        if (isDefaultSkin()) {
+            return mContextRef.get().getResources().getColorStateList(attrValueRefId);
+        }
 
-        if (!isDefaultSkin()) {
-            int skinColorResId = mResources.getIdentifier(resName, "color", skinPackageName);
-            if (skinColorResId != 0) {// 如果皮肤包没有复写该资源，但是需要判断是否是ColorStateList
-                try {
-                    colorList = mResources.getColorStateList(skinColorResId);
-                } catch (Resources.NotFoundException e) {
-                    e.printStackTrace();
-                }
+        ColorStateList colorList = null;
+        int skinColorResId = mResources.getIdentifier(resName, "color", skinPackageName);
+        if (skinColorResId != 0) {// 如果皮肤包没有复写该资源，但是需要判断是否是ColorStateList
+            try {
+                colorList = mResources.getColorStateList(skinColorResId);
+            } catch (Resources.NotFoundException e) {
+                e.printStackTrace();
             }
         }
         if (colorList == null) {

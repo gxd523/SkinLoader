@@ -4,19 +4,19 @@ import android.view.View;
 
 public abstract class SkinAttr {
     /**
-     * textColor
+     * android:background="@color/colorBackground"里的background
      */
     public String attrName;
     /**
-     * 2130745655
+     * R.color.colorBackground的值：2130745655
      */
     public int attrValueRefId;
     /**
-     * colorText
+     * android:background="@color/colorBackground"里的colorBackground
      */
     public String attrValueRefName;
     /**
-     * color
+     * android:background="@color/colorBackground"里的color
      */
     public String attrValueTypeName;
 

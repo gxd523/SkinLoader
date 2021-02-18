@@ -19,7 +19,7 @@ import java.util.Map;
 public class SkinInflaterFactory implements LayoutInflater.Factory {
     public static final String SKIN_NAMESPACE = "http://schemas.android.com/android/skin";
     public static final String SKIN_ATTR = "skin_enable";
-    private Map<View, List<SkinAttr>> skinViewMap = new HashMap<>();
+    private final Map<View, List<SkinAttr>> skinViewMap = new HashMap<>();
 
     @Override
     public View onCreateView(String name, Context context, AttributeSet attrs) {
@@ -77,7 +77,7 @@ public class SkinInflaterFactory implements LayoutInflater.Factory {
         }
 
         if (skinAttrList.size() > 0) {
-            addSkinView(view, skinAttrList);
+            view.post(() -> addSkinView(view, skinAttrList));
         }
     }
 

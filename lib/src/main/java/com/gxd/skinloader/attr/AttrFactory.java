@@ -10,9 +10,9 @@ public class AttrFactory {
         if (attrValue.startsWith("@")) {
             try {
                 int attrValueRefId = Integer.parseInt(attrValue.substring(1));
-                // colorText
+                // android:background="@color/colorBackground"里的colorBackground
                 String entryName = resources.getResourceEntryName(attrValueRefId);
-                // color
+                // android:background="@color/colorBackground"里的color
                 String typeName = resources.getResourceTypeName(attrValueRefId);
                 SkinAttr skinAttr = null;
                 switch (attrName) {
