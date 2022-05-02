@@ -25,20 +25,20 @@ import java.util.concurrent.Executors;
  */
 public enum SkinManager {
     INSTANCE;
-    public static final String SKIN_PATH = "skin_path";
+    private static final String SP_SKIN_PATH = "skin_path";
     private String skinPackageName;
     private Resources mResources;
     private WeakReference<Context> mContextRef;
     private ExecutorService threadExecutor;
     private Set<SkinObserver> observerSet;
-    private SharedPreferences sharedPreferences;
+    private SharedPreferences mSp;
 
     public void init(Context context) {
         mContextRef = new WeakReference<>(context.getApplicationContext());
         threadExecutor = Executors.newSingleThreadExecutor();
         observerSet = new HashSet<>();
-        sharedPreferences = context.getSharedPreferences("sp_skin", Context.MODE_PRIVATE);
-        String skinPath = sharedPreferences.getString(SKIN_PATH, "");
+        mSp = context.getSharedPreferences("sp_skin", Context.MODE_PRIVATE);
+        String skinPath = mSp.getString(SP_SKIN_PATH, "");
         if (!TextUtils.isEmpty(skinPath)) {
             load(new File(skinPath), null);
         }
@@ -48,7 +48,7 @@ public enum SkinManager {
         if (skinListener != null) {
             skinListener.onStart();
         }
-        threadExecutor.submit(() -> {
+        threadExecutor.execute(() -> {
             mResources = loadSkinResource(skinFile);
             if (mResources == null) {
                 if (skinListener != null) {
@@ -56,7 +56,7 @@ public enum SkinManager {
                 }
             } else {
                 notifySkinChanged();
-                sharedPreferences.edit().putString(SKIN_PATH, skinFile.getAbsolutePath()).apply();
+                mSp.edit().putString(SP_SKIN_PATH, skinFile.getAbsolutePath()).apply();
                 if (skinListener != null) {
                     skinListener.onSucceed();
                 }
@@ -75,6 +75,7 @@ public enum SkinManager {
         }
 
         PackageManager packageManager = context.getPackageManager();
+        // 通过getPackageArchiveInfo()获取其他apk的packageInfo
         PackageInfo packageInfo = packageManager.getPackageArchiveInfo(skinFile.getAbsolutePath(), PackageManager.GET_ACTIVITIES);
         if (packageInfo == null) {
             return null;
@@ -114,7 +115,7 @@ public enum SkinManager {
 
     public void restoreDefaultSkin() {
         mResources = mContextRef.get().getResources();
-        sharedPreferences.edit().remove(SKIN_PATH).apply();
+        mSp.edit().remove(SP_SKIN_PATH).apply();
         notifySkinChanged();
     }
 
@@ -130,12 +131,12 @@ public enum SkinManager {
             return drawable;
         }
         String resName = mContextRef.get().getResources().getResourceEntryName(resId);
-        int drawableResId = mResources.getIdentifier(resName, "drawable", skinPackageName);
+        int skinResId = mResources.getIdentifier(resName, "drawable", skinPackageName);
         try {
-            if (Build.VERSION.SDK_INT < 22) {
-                drawable = mResources.getDrawable(drawableResId);
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP_MR1) {
+                drawable = mResources.getDrawable(skinResId);
             } else {
-                drawable = mResources.getDrawable(drawableResId, null);
+                drawable = mResources.getDrawable(skinResId, null);
             }
         } catch (Resources.NotFoundException e) {
             e.printStackTrace();
@@ -149,10 +150,10 @@ public enum SkinManager {
             return colorValue;
         }
 
-        String resName = mContextRef.get().getResources().getResourceEntryName(resId);
-        int trueResId = mResources.getIdentifier(resName, "color", skinPackageName);
+        String resourceEntryName = mContextRef.get().getResources().getResourceEntryName(resId);
+        int skinResId = mResources.getIdentifier(resourceEntryName, "color", skinPackageName);
         try {
-            colorValue = mResources.getColor(trueResId);
+            colorValue = mResources.getColor(skinResId);
         } catch (Resources.NotFoundException e) {
             e.printStackTrace();
         }

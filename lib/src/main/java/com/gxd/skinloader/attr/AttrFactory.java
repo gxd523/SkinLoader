@@ -6,15 +6,15 @@ public class AttrFactory {
     public static final String BACKGROUND = "background";
     public static final String TEXT_COLOR = "textColor";
 
-    public static SkinAttr get(Resources resources, String attrName, String attrValue) {
+    public static AbsSkinAttr get(Resources resources, String attrName, String attrValue) {
         if (attrValue.startsWith("@")) {
             try {
-                int attrValueRefId = Integer.parseInt(attrValue.substring(1));
+                int attrValueResId = Integer.parseInt(attrValue.substring(1));
                 // android:background="@color/colorBackground"里的colorBackground
-                String entryName = resources.getResourceEntryName(attrValueRefId);
+                String entryName = resources.getResourceEntryName(attrValueResId);
                 // android:background="@color/colorBackground"里的color
-                String typeName = resources.getResourceTypeName(attrValueRefId);
-                SkinAttr skinAttr = null;
+                String typeName = resources.getResourceTypeName(attrValueResId);
+                AbsSkinAttr skinAttr = null;
                 switch (attrName) {
                     case BACKGROUND:
                         skinAttr = new BackgroundAttr();
@@ -26,9 +26,9 @@ public class AttrFactory {
 
                 if (skinAttr != null) {
                     skinAttr.attrName = attrName;
-                    skinAttr.attrValueRefId = attrValueRefId;
-                    skinAttr.attrValueRefName = entryName;
-                    skinAttr.attrValueTypeName = typeName;
+                    skinAttr.attrValueResId = attrValueResId;
+                    skinAttr.attrValueResEntryName = entryName;
+                    skinAttr.attrValueResTypeName = typeName;
                 }
                 return skinAttr;
             } catch (Resources.NotFoundException e) {

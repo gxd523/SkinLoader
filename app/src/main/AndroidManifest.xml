@@ -1,13 +1,14 @@
-<manifest
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.gxd.skinloader.sample">
 
     <application
         android:name=".MyApplication"
+        android:icon="@android:mipmap/sym_def_app_icon"
         android:label="SkinLoaderSample"
-        android:roundIcon="@android:mipmap/sym_def_app_icon"
         android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen">
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

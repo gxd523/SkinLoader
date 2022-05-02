@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import com.gxd.skinloader.attr.AttrFactory;
-import com.gxd.skinloader.attr.SkinAttr;
+import com.gxd.skinloader.attr.AbsSkinAttr;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,7 +19,7 @@ import java.util.Map;
 public class SkinInflaterFactory implements LayoutInflater.Factory {
     public static final String SKIN_NAMESPACE = "http://schemas.android.com/android/skin";
     public static final String SKIN_ATTR = "skin_enable";
-    private final Map<View, List<SkinAttr>> skinViewMap = new HashMap<>();
+    private final Map<View, List<AbsSkinAttr>> skinViewMap = new HashMap<>();
 
     @Override
     public View onCreateView(String name, Context context, AttributeSet attrs) {
@@ -62,15 +62,15 @@ public class SkinInflaterFactory implements LayoutInflater.Factory {
     }
 
     private void parseSkinAttr(Context context, AttributeSet attrs, View view) {
-        List<SkinAttr> skinAttrList = new ArrayList<>();
+        List<AbsSkinAttr> skinAttrList = new ArrayList<>();
         for (int i = 0; i < attrs.getAttributeCount(); i++) {
-            String attrName = attrs.getAttributeName(i);
-            String attrValue = attrs.getAttributeValue(i);
+            String attrName = attrs.getAttributeName(i);// 例如：layout_width
+            String attrValue = attrs.getAttributeValue(i);// resId(例如：@2130771970)、值(例如：-1)
 
             if (!AttrFactory.isSupportedAttr(attrName)) {
                 continue;
             }
-            SkinAttr skinAttr = AttrFactory.get(context.getResources(), attrName, attrValue);
+            AbsSkinAttr skinAttr = AttrFactory.get(context.getResources(), attrName, attrValue);
             if (skinAttr != null) {
                 skinAttrList.add(skinAttr);
             }
@@ -81,25 +81,25 @@ public class SkinInflaterFactory implements LayoutInflater.Factory {
         }
     }
 
-    public void addSkinView(View view, List<SkinAttr> skinAttrList) {
+    public void addSkinView(View view, List<AbsSkinAttr> skinAttrList) {
         if (skinAttrList == null || skinAttrList.size() == 0) {
             return;
         }
         skinViewMap.put(view, skinAttrList);
         if (!SkinManager.INSTANCE.isDefaultSkin()) {
-            for (SkinAttr skinAttr : skinAttrList) {
+            for (AbsSkinAttr skinAttr : skinAttrList) {
                 skinAttr.apply(view);
             }
         }
     }
 
     public void applySkin() {
-        for (Map.Entry<View, List<SkinAttr>> entry : skinViewMap.entrySet()) {
+        for (Map.Entry<View, List<AbsSkinAttr>> entry : skinViewMap.entrySet()) {
             View skinView = entry.getKey();
             if (skinView == null) {
                 continue;
             }
-            for (SkinAttr skinAttr : entry.getValue()) {
+            for (AbsSkinAttr skinAttr : entry.getValue()) {
                 skinAttr.apply(skinView);
             }
         }

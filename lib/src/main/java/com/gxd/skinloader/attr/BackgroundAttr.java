@@ -5,13 +5,13 @@ import android.view.View;
 
 import com.gxd.skinloader.SkinManager;
 
-public class BackgroundAttr extends SkinAttr {
+public class BackgroundAttr extends AbsSkinAttr {
     @Override
     public void apply(View view) {
-        if ("color".equals(attrValueTypeName)) {
-            view.setBackgroundColor(SkinManager.INSTANCE.getColor(attrValueRefId));
-        } else if ("drawable".equals(attrValueTypeName)) {
-            Drawable drawable = SkinManager.INSTANCE.getDrawable(attrValueRefId);
+        if ("color".equals(attrValueResTypeName)) {
+            view.setBackgroundColor(SkinManager.INSTANCE.getColor(attrValueResId));
+        } else if ("drawable".equals(attrValueResTypeName)) {
+            Drawable drawable = SkinManager.INSTANCE.getDrawable(attrValueResId);
             view.setBackground(drawable);
         }
     }

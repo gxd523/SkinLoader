@@ -1,15 +1,33 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion "29.0.3"
+    compileSdkVersion 31
 
     defaultConfig {
         applicationId "com.gxd.skinloader.skin"
         minSdkVersion 16
-        targetSdkVersion 29
+        targetSdkVersion 31
         versionCode 1
         versionName "1.0"
+    }
+    signingConfigs {
+        sign_config {
+            keyAlias '123456'
+            keyPassword '123456'
+            storeFile file('sign')
+            storePassword '123456'
+        }
+    }
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.sign_config
+            minifyEnabled false
+        }
+
+        release {
+            signingConfig signingConfigs.sign_config
+            minifyEnabled false
+        }
     }
 }
 
@@ -42,7 +60,7 @@ void renameSkinFile(boolean isDebug) {
     }
 
     copy {
-        from(String.format('build/outputs/apk/%s/', txt))
+        from(String.format('build/intermediates/apk/%s/', txt))
         into(skinDir)
         include '*.apk'
         exclude '**/*-unaligned.apk'

@@ -8,7 +8,7 @@ import android.view.View;
 import com.gxd.skinloader.SkinInflaterFactory;
 import com.gxd.skinloader.SkinManager;
 import com.gxd.skinloader.SkinObserver;
-import com.gxd.skinloader.attr.SkinAttr;
+import com.gxd.skinloader.attr.AbsSkinAttr;
 
 import java.util.Arrays;
 import java.util.List;
@@ -44,8 +44,8 @@ public abstract class BaseActivity extends Activity implements SkinObserver {
         }
     }
 
-    public void addSkinViewMap(View view, SkinAttr... skinAttrs) {
-        List<SkinAttr> skinAttrList = Arrays.asList(skinAttrs);
+    public void addSkinViewMap(View view, AbsSkinAttr... skinAttrs) {
+        List<AbsSkinAttr> skinAttrList = Arrays.asList(skinAttrs);
         LayoutInflater.Factory factory = getLayoutInflater().getFactory();
         if (factory instanceof SkinInflaterFactory) {
             ((SkinInflaterFactory) factory).addSkinView(view, skinAttrList);

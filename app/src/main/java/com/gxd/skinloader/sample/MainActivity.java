@@ -1,10 +1,5 @@
 package com.gxd.skinloader.sample;
 
-import android.Manifest;
-import android.annotation.TargetApi;
-import android.app.AlertDialog;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,37 +24,6 @@ public class MainActivity extends BaseActivity {
         button = findViewById(R.id.activity_btn);
         button.post(() -> button.setText(SkinManager.INSTANCE.isDefaultSkin() ? "白色主题" : "黑色主题"));
         rootView = findViewById(R.id.activity_main_root);
-
-        handlePermissions(Manifest.permission.READ_EXTERNAL_STORAGE);
-    }
-
-    @TargetApi(Build.VERSION_CODES.M)
-    private void handlePermissions(String... permissions) {
-        for (String permission : permissions) {
-            if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{permission}, 0);// 如果用户选择禁止后不在询问，则下次启动requestPermissions也无法调起系统权限提示
-            }
-        }
-    }
-
-    @TargetApi(Build.VERSION_CODES.M)
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        for (int i = 0; i < grantResults.length; i++) {
-            int grantResult = grantResults[i];
-            String permission = permissions[i];
-            if (grantResult != PackageManager.PERMISSION_GRANTED &&
-                    shouldShowRequestPermissionRationale(permission)) {// 用户禁止了该权限，但仍允许下次提示，此时应该向用户解释为啥需要该权限
-                AlertDialog alertDialog = new AlertDialog.Builder(this)
-                        .setTitle("需要此权限以实现换肤")
-                        .setMessage(permission)
-                        .setNegativeButton("不需要", (dialog, which) -> dialog.dismiss())
-                        .setPositiveButton("重新选择", (dialog, which) -> requestPermissions(new String[]{permission}, 0))
-                        .setCancelable(false)
-                        .create();
-                alertDialog.show();
-            }
-        }
     }
 
     public void onClick(View v) {
