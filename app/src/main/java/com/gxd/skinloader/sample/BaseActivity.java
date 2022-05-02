@@ -22,18 +22,13 @@ public abstract class BaseActivity extends Activity implements SkinObserver {
         super.onCreate(savedInstanceState);
 
         getLayoutInflater().setFactory(new SkinInflaterFactory());
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
         SkinManager.INSTANCE.attach(this);
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onDestroy() {
         SkinManager.INSTANCE.detach(this);
+        super.onDestroy();
     }
 
     @Override

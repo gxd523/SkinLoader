@@ -20,7 +20,6 @@
         skin:skin_enable="true" />
 
     <Button
-        android:id="@+id/main_add_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="3dp"
@@ -31,23 +30,12 @@
         skin:skin_enable="true" />
 
     <Button
-        android:id="@+id/main_theme_btn"
+        android:id="@+id/second_theme_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="3dp"
         android:onClick="onClick"
         android:text="白色主题"
-        android:textColor="@color/btn_text"
-        android:textSize="24sp"
-        skin:skin_enable="true" />
-
-    <Button
-        android:id="@+id/main_second_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="3dp"
-        android:onClick="onClick"
-        android:text="启动SecondActivity"
         android:textColor="@color/btn_text"
         android:textSize="24sp"
         skin:skin_enable="true" />
