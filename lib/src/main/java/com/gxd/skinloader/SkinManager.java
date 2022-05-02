@@ -17,8 +17,6 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Created by guoxiaodong on 2020/7/3 16:21
@@ -29,13 +27,11 @@ public enum SkinManager {
     private String skinPackageName;
     private Resources mResources;
     private WeakReference<Context> mContextRef;
-    private ExecutorService threadExecutor;
     private Set<SkinObserver> observerSet;
     private SharedPreferences mSp;
 
     public void init(Context context) {
         mContextRef = new WeakReference<>(context.getApplicationContext());
-        threadExecutor = Executors.newSingleThreadExecutor();
         observerSet = new HashSet<>();
         mSp = context.getSharedPreferences("sp_skin", Context.MODE_PRIVATE);
         String skinPath = mSp.getString(SP_SKIN_PATH, "");
@@ -48,20 +44,23 @@ public enum SkinManager {
         if (skinListener != null) {
             skinListener.onStart();
         }
-        threadExecutor.execute(() -> {
-            mResources = loadSkinResource(skinFile);
-            if (mResources == null) {
-                if (skinListener != null) {
-                    skinListener.onFailed();
-                }
-            } else {
-                notifySkinChanged();
-                mSp.edit().putString(SP_SKIN_PATH, skinFile.getAbsolutePath()).apply();
-                if (skinListener != null) {
-                    skinListener.onSucceed();
+        new Thread() {
+            @Override
+            public void run() {
+                mResources = loadSkinResource(skinFile);
+                if (mResources == null) {
+                    if (skinListener != null) {
+                        skinListener.onFailed();
+                    }
+                } else {
+                    notifySkinChanged();
+                    mSp.edit().putString(SP_SKIN_PATH, skinFile.getAbsolutePath()).apply();
+                    if (skinListener != null) {
+                        skinListener.onSucceed();
+                    }
                 }
             }
-        });
+        }.start();
     }
 
     private Resources loadSkinResource(File skinFile) {
